@@ -3,28 +3,29 @@
 class ProductManager {
 
     constructor(){
-        this.products = []        
+        this.products = []
+        this.nextID = 1
+               
 
     }
 
     
 
-    addProduct(title, description, price, thumbnail, code, stock){
-
-        const product_id = this.products.length + 1
-        const product = { id: product_id , title , description , price , thumbnail , code , stock  }
-
-        let codeRep = this.products.find((product) => product.code === code)
-         if ( !codeRep){
-            this.products.push(product)
-            
-        }else{
-            console.log("el producto ya fue agregado")
-        } 
-     
-      
-
-    }
+    addProduct(product){
+        if (!this.isProductValid(product)) {
+            console.log("Error: El producto no es válido")
+            return
+        }
+        
+        if (this.isCodeDuplicate(product.code)) {
+            console.log("Error: El código del producto ya está en uso")
+            return
+        }
+            product.id = this.nextID++
+            this.products.push(product)          
+       
+    
+}
 
 
     getProducts(){
@@ -44,6 +45,41 @@ class ProductManager {
 
 
     }
+
+
+    deleteProduct (product_id){
+        let busId = this.products.findIndex((product)=> product.id === product_id)
+        if (busId !== -1) {
+            this.products.splice(busId, 1);
+        }
+    }
+
+
+    updateProduct(product_id , updatedFields ){
+        const busId = this.products.findIndex(product => product.id === product_id);
+        if (busId !== -1) {
+            this.products[busId] = { ...this.products[busId], ...updatedFields };
+            
+        
+           
+        }
+
+    }
+    isCodeDuplicate(code) {
+        return this.products.some((p) => p.code === code)
+    }
+
+    isProductValid(product) {
+        return (
+            product.title &&
+            product.description &&
+            product.price &&
+            product.thumbnail &&
+            product.code &&
+            product.stock !== undefined
+        )
+    }
+
 }
 
 
@@ -52,8 +88,11 @@ class ProductManager {
 const productManager = new ProductManager ();
 
 
-productManager.addProduct ("Mermelada","Arcor de Durazno", 600 , "xxxx",1,15)
-productManager.addProduct ("Jugo","Arcor de Durazno", 150 , "xxxx",2,5)
-productManager.addProduct ("Jugo","Arcor de Manzana", 150 , "xxxx",3,12)
+productManager.addProduct ({title: "Mermelada", description: "Arcor de Durazno", price: 1500, thumbnail: 'ru/xxxxx.jpg', code: '001', stock: 16})
+productManager.addProduct ({title: "Mermelada", description: "Arcor de Manzana", price: 1500, thumbnail: 'ru/xxxxx.jpg', code: '002', stock: 12})
+productManager.addProduct ({title: "Mermelada", description: "Arcor de Durazno", price: 1500, thumbnail: 'ru/xxxxx.jpg', code: '001', stock: 55})
+productManager.addProduct ({title: "Mermelada", description: "Arcor de Naranja", price: 1500, thumbnail: 'ru/xxxxx.jpg', code: '003', stock: 15})
+
+
 
 
